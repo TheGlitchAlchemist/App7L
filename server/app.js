@@ -64,6 +64,29 @@ app.post("/login", (req, res) => {
   });
 });
 
+// Ruta para leer (READ) todos los registros de la tabla "gastos"
+app.get("/gastos", (req, res) => {
+  const sql = "SELECT id_usuario, categoria, descripcion, monto, fecha_gasto FROM gastos";
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error("❌ Error al obtener gastos:", err);
+      return res.status(500).json({ success: false, message: "Error en el servidor" });
+    }
+
+    res.json({
+      success: true,
+      data: results,
+    });
+  });
+});
+
+
+
+
+
+
+
  // Escuchar servidor en puerto 3001
 const PORT = 3001;
 app.listen(PORT, "0.0.0.0", () => {
