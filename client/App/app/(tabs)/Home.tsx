@@ -1,8 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  ScrollView,
+  Platform,
+} from "react-native";
 
-// ✅ cambia esta URL cada vez que reinicies ngrok
-const BASE_URL = "https://aleta-logorrheic-trucklingly.ngrok-free.dev";
+// 🔥 Detecta el entorno automáticamente
+const API_URL =
+  Platform.OS === "web"
+    ? "http://localhost:3001" // 💻 cuando corres en Expo web
+    : "https://aleta-logorrheic-trucklingly.ngrok-free.dev"; // 📱 cuando corres en Expo Go móvil
 
 type Gasto = {
   id_usuario: number;
@@ -16,18 +26,32 @@ export default function Home() {
   const [gastos, setGastos] = useState<Gasto[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchGastos = async () => {
-      try {
-        const res = await fetch(`${BASE_URL}/gastos`);
-        const data = await res.json();
-        setGastos(data.data || []);
-      } catch (error) {
-        console.error("Error al obtener gastos:", error);
-      } finally {
-        setLoading(false);
+  const fetchGastos = async () => {
+    try {
+      const res = await fetch(`${API_URL}/gastos`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("❌ Error HTTP:", res.status, text);
+        return;
       }
-    };
+
+      const data = await res.json();
+      console.log("✅ Datos obtenidos:", data);
+      setGastos(data.data || []);
+    } catch (error) {
+      console.error("❌ Error al obtener gastos:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchGastos();
   }, []);
 
@@ -43,7 +67,10 @@ export default function Home() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Lista de Gastos Registrados</Text>
-      <ScrollView style={styles.scrollVertical} showsVerticalScrollIndicator={true}>
+      <ScrollView
+        style={styles.scrollVertical}
+        showsVerticalScrollIndicator={true}
+      >
         <ScrollView horizontal showsHorizontalScrollIndicator={true}>
           <View style={styles.table}>
             <View style={[styles.row, styles.headerRow]}>
@@ -55,7 +82,13 @@ export default function Home() {
             </View>
 
             {gastos.map((g, i) => (
-              <View key={i} style={[styles.row, i % 2 === 0 ? styles.rowLight : styles.rowDark]}>
+              <View
+                key={i}
+                style={[
+                  styles.row,
+                  i % 2 === 0 ? styles.rowLight : styles.rowDark,
+                ]}
+              >
                 <Text style={styles.cell}>{g.id_usuario}</Text>
                 <Text style={styles.cell}>{g.categoria}</Text>
                 <Text style={styles.cell}>{g.descripcion}</Text>
@@ -77,14 +110,55 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20, backgroundColor: "#f8f9fa" },
-  title: { fontSize: 26, fontWeight: "bold", marginBottom: 20, color: "#14035cff" },
-  scrollVertical: { maxHeight: "80%" },
-  table: { width: 900, backgroundColor: "#fff", borderRadius: 12, overflow: "hidden", elevation: 3, shadowColor: "#000", shadowOpacity: 0.2, shadowOffset: { width: 0, height: 3 }, shadowRadius: 4 },
-  headerRow: { backgroundColor: "#14035cff" },
-  row: { flexDirection: "row" },
-  rowLight: { backgroundColor: "#ffffff" },
-  rowDark: { backgroundColor: "#f2f2f2" },
-  cell: { flex: 1, paddingVertical: 18, textAlign: "center", fontSize: 17, color: "#333" },
-  headerCell: { color: "#fff", fontWeight: "bold", fontSize: 18 },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+    backgroundColor: "#f8f9fa",
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: "bold",
+    marginBottom: 20,
+    color: "#14035cff",
+  },
+  scrollVertical: {
+    maxHeight: "80%",
+  },
+  table: {
+    width: 900,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    overflow: "hidden",
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 4,
+  },
+  headerRow: {
+    backgroundColor: "#14035cff",
+  },
+  row: {
+    flexDirection: "row",
+  },
+  rowLight: {
+    backgroundColor: "#ffffff",
+  },
+  rowDark: {
+    backgroundColor: "#f2f2f2",
+  },
+  cell: {
+    flex: 1,
+    paddingVertical: 18,
+    textAlign: "center",
+    fontSize: 17,
+    color: "#333",
+  },
+  headerCell: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 18,
+  },
 });

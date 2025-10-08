@@ -1,8 +1,15 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+} from "react-native";
 import { router } from "expo-router";
 
-// ✅ cambia esta URL cada vez que reinicies ngrok
+// ⚠️ Actualiza esta URL cada vez que reinicies ngrok
 const BASE_URL = "https://aleta-logorrheic-trucklingly.ngrok-free.dev";
 
 export default function LoginScreen() {
@@ -28,8 +35,8 @@ export default function LoginScreen() {
 
       Alert.alert("Bienvenido", `Hola ${data.user.nombre}`);
       router.replace("/Home");
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error("Error al conectar con backend:", error);
       Alert.alert("Error de conexión", "No se pudo conectar al servidor.");
     }
   };
@@ -62,9 +69,32 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", paddingHorizontal: 30, backgroundColor: "#f5f5f5" },
-  title: { fontSize: 28, fontWeight: "bold", marginBottom: 30, textAlign: "center", color: "#333" },
-  input: { borderWidth: 1, borderColor: "#ccc", borderRadius: 8, padding: 12, marginBottom: 15, backgroundColor: "#fff" },
-  button: { backgroundColor: "#007BFF", padding: 15, borderRadius: 8, alignItems: "center" },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    paddingHorizontal: 30,
+    backgroundColor: "#f5f5f5",
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 30,
+    textAlign: "center",
+    color: "#333",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 15,
+    backgroundColor: "#fff",
+  },
+  button: {
+    backgroundColor: "#007BFF",
+    padding: 15,
+    borderRadius: 8,
+    alignItems: "center",
+  },
   buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
 });
